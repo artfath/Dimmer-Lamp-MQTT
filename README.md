@@ -44,3 +44,7 @@ dependencies {
 #### MQTTX Dekstop App
 <br />
 <img src="https://github.com/artfath/Dimmer-Lamp-MQTT/assets/86766443/dcee6d10-9f57-484f-b6cc-eaa6a3ea7842" width="800">
+
+## Asset
+
+Lamp Image: Pierre Châtel-Innocenti on Unsplash https://unsplash.com/s/photos/lamp?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText

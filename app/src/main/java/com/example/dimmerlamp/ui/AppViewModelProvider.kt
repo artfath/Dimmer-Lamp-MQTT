@@ -5,12 +5,12 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.dimmerlamp.DataApplication
-import com.example.dimmerlamp.ui.home.HomeViewModel
+import com.example.dimmerlamp.ui.screen.MainViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
-            HomeViewModel(
+            MainViewModel(
                 mqttRepository = dataApplication().container.mqttRepository
             )
         }

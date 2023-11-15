@@ -68,11 +68,14 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.navigation:navigation-compose:2.7.5")
     //MQTT
     implementation ("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
     implementation ("com.github.hannesa2:paho.mqtt.android:3.3.5")
     //legacy local broadcast manager
     implementation ("androidx.legacy:legacy-support-v4:1.0.0")
-
+    //prefences dataStore
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
 
 }

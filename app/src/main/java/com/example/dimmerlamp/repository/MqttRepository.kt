@@ -11,13 +11,14 @@ import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 
 interface MqttRepository {
-    fun connect()
+    fun connect(listener:IMqttActionListener?)
+
     fun publish(topic: String, payload: String, qos: Int, isRetained: Boolean)
     fun subscribe(topic: String, qos: Int)
-    fun disconnect()
+    fun disconnect(listener: IMqttActionListener?)
 }
 class MqttRepositoryImpl(private val mqttClient: MqttAndroidClient):MqttRepository{
-    override fun connect() {
+    override fun connect(listener:IMqttActionListener?){
         mqttClient.setCallback(object : MqttCallback {
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 Log.d("client", "Receive message: ${message.toString()} from topic: $topic")
@@ -33,15 +34,7 @@ class MqttRepositoryImpl(private val mqttClient: MqttAndroidClient):MqttReposito
         })
         val options = MqttConnectOptions()
         try {
-            mqttClient.connect(options, null, object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken?) {
-                    Log.d("client", "Connection success")
-                }
-
-                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                    Log.d("client", "Connection failure")
-                }
-            })
+            mqttClient.connect(options, null, listener)
         } catch (e: MqttException) {
             e.printStackTrace()
         }
@@ -71,17 +64,9 @@ class MqttRepositoryImpl(private val mqttClient: MqttAndroidClient):MqttReposito
         TODO("Not yet implemented")
     }
 
-    override fun disconnect() {
+    override fun disconnect(listener: IMqttActionListener?) {
         try{
-            mqttClient.disconnect(null,object :IMqttActionListener{
-                override fun onSuccess(asyncActionToken: IMqttToken?) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                    TODO("Not yet implemented")
-                }
-            })
+            mqttClient.disconnect(null,listener)
         }catch (e:MqttException){
             e.printStackTrace()
         }

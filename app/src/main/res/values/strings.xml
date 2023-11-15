@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Dimmer Lamp</string>
+    <string name="topic">Topic</string>
+    <string name="home">home</string>
+    <string name="status_connection">Status: %s</string>
+    <string name="topic_value">Topic: %s</string>
 </resources>

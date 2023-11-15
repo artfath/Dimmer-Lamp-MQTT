@@ -1,16 +1,23 @@
-package com.example.dimmerlamp.ui.home
+package com.example.dimmerlamp.ui.screen
 
-import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -18,22 +25,17 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.dimmerlamp.ui.AppViewModelProvider
+import com.example.dimmerlamp.R
 import com.example.dimmerlamp.ui.component.CircleGraph
 import com.example.dimmerlamp.ui.theme.Blue700
 import com.example.dimmerlamp.ui.theme.Blue900
@@ -44,15 +46,23 @@ import com.example.dimmerlamp.ui.theme.Neutral600
 
 @Composable
 fun HomeScreen(
+    navigateToConnection: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    checked: Boolean,
+    sliderPosition: Float,
+    connected: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    onSliderChange: (Float) -> Unit
 ) {
-    val dataUiState by viewModel.uiState.collectAsState()
-    HomeBody(modifier = modifier,
-        sliderPosition = dataUiState.brightnessValue,
-        checked = dataUiState.switchValue,
-        onCheckedChange = { viewModel.setSwitch(it.toString()) },
-        onSliderChange = { viewModel.setBrightness(it.toInt()) })
+    HomeBody(
+        modifier = modifier,
+        sliderPosition = sliderPosition,
+        checked = checked,
+        connected = connected,
+        onCheckedChange = onCheckedChange,
+        onSliderChange = onSliderChange,
+        navigateToConnection = navigateToConnection,
+    )
 }
 
 @Composable
@@ -60,44 +70,72 @@ fun HomeBody(
     modifier: Modifier,
     sliderPosition: Float,
     checked: Boolean,
+    connected: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    onSliderChange: (Float) -> Unit
+    onSliderChange: (Float) -> Unit,
+    navigateToConnection: () -> Unit,
 ) {
-    BoxWithConstraints {
-        Column(
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .verticalScroll(rememberScrollState())
+            .background(color = Color.White)
+    ) {
+//    Column(
+//        modifier = modifier
+//            .fillMaxWidth()
+//
+//    ) {
+        Row(
             modifier = modifier
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .background(color = Color.White)
-        ) {
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .height(340.dp)
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(Color(0xFF29B1F7), Color(0xFFE0F4FE)),
-                            startY = 100f,
-                        )
+                .height(340.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color(0xFF29B1F7), Color(0xFFE0F4FE)),
+                        startY = 100f,
                     )
-            ) {
+                ),
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            Column {
+                IconButton(
+                    modifier = modifier
+                        .padding(8.dp), onClick = navigateToConnection
+                ) {
+                    Icon(
+                        painter = painterResource(id = if (connected) R.drawable.ic_signal else R.drawable.ic_signal_off),
+                        tint = Color.White,
+                        contentDescription = null
+                    )
+                }
                 Text(
                     modifier = modifier.padding(top = 24.dp, start = 16.dp),
                     text = "Smart Lamp",
                     style = MaterialTheme.typography.headlineLarge,
                     color = Color.White
                 )
-//                Image(modifier=modifier
-//                    .height(260.dp),painter = painterResource(id = R.drawable.lamp), contentDescription = null)
             }
-
+            Spacer(modifier = modifier.width(16.dp))
+            Image(
+                modifier = modifier
+                    .height(260.dp), painter = painterResource(id = R.drawable.light),
+                contentDescription = null
+            )
         }
+
+//    }
         Box(
             modifier = modifier
                 .padding(top = 280.dp),
             contentAlignment = Alignment.Center
         ) {
-            Column {
+            Column(
+                modifier = modifier
+                    .padding(bottom = 24.dp)
+            ) {
                 Box(
                     modifier = modifier
                         .fillMaxWidth()
@@ -109,9 +147,8 @@ fun HomeBody(
                         values = sliderPosition
                     )
                 }
-
                 Slider(
-                    enabled = checked,
+                    enabled = if (connected.equals(true) && checked.equals(true)) true else false,
                     modifier = modifier
                         .padding(top = 16.dp, start = 16.dp, end = 16.dp),
                     value = sliderPosition,
@@ -125,6 +162,7 @@ fun HomeBody(
                 SwitchCard(
                     modifier = modifier,
                     checked = checked,
+                    enabled = connected,
                     onCheckedChange = onCheckedChange
                 )
                 WattMeterCard(modifier = modifier, value = sliderPosition)
@@ -140,14 +178,15 @@ fun HomeBody(
 fun SwitchCard(
     modifier: Modifier,
     checked: Boolean,
+    enabled: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-            .shadow(elevation = 6.dp, ambientColor = Color.Gray)
-            .clip(RoundedCornerShape(15.dp))
+            .shadow(elevation = 6.dp, ambientColor = Color.Gray,
+                shape = RoundedCornerShape(15.dp))
             .background(color = Color.White)
     ) {
         Row(
@@ -181,6 +220,7 @@ fun SwitchCard(
             ) {
                 Switch(
                     checked = checked,
+                    enabled = enabled,
                     onCheckedChange = onCheckedChange,
                     colors = SwitchDefaults.colors(
                         checkedTrackColor = Blue700,
@@ -203,9 +243,12 @@ fun WattMeterCard(modifier: Modifier, value: Float) {
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-            .shadow(elevation = 6.dp, ambientColor = Color.Gray)
-            .clip(RoundedCornerShape(15.dp))
+            .shadow(elevation = 6.dp, ambientColor = Color.Gray,
+                shape = RoundedCornerShape(15.dp))
+
+//            .clip(RoundedCornerShape(15.dp))
             .background(color = Color.White)
+
     ) {
         Row(
             modifier = modifier
@@ -251,11 +294,14 @@ fun WattMeterCard(modifier: Modifier, value: Float) {
 @Composable
 fun HomeScreenPreview() {
     DimmerLampTheme(darkTheme = false) {
-        HomeBody(modifier = Modifier,
+        HomeBody(
+            modifier = Modifier,
             sliderPosition = 80f,
             checked = true,
+            connected = false,
             onCheckedChange = {},
-            onSliderChange = {}
+            onSliderChange = {},
+            navigateToConnection = {},
         )
     }
 }

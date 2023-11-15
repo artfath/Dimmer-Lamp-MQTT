@@ -14,17 +14,20 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
+    primary = Blue200,
+    secondary = Blue900,
     tertiary = Pink80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+//    primary = Purple40,
+    primary = Blue500,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -53,13 +56,20 @@ fun DimmerLampTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
-        }
+//    val view = LocalView.current
+//    if (!view.isInEditMode) {
+//        SideEffect {
+//            val window = (view.context as Activity).window
+//            window.statusBarColor = colorScheme.primary.toArgb()
+//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+//        }
+//    }
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = Blue700,
+            darkIcons = false
+        )
     }
 
     MaterialTheme(
